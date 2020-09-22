@@ -186,17 +186,19 @@ class CircularCheckBox extends StatefulWidget {
 
 class _CircularCheckBoxState extends State<CircularCheckBox> with TickerProviderStateMixin {
   bool get enabled => widget.onChanged != null;
-  Map<LocalKey, ActionFactory> _actionMap;
+  Map<Type, Action<Intent>> _actionMap;
 
   @override
   void initState() {
     super.initState();
-    _actionMap = <LocalKey, ActionFactory>{
-      ActivateAction.key: _createAction,
+    _actionMap = <Type, Action<Intent>>{
+      ActivateIntent: CallbackAction(
+        onInvoke: (Intent intent) => _actionHandler(),
+      ),
     };
   }
 
-  void _actionHandler(FocusNode node, Intent intent) {
+  void _actionHandler() {
     if (widget.onChanged != null) {
       switch (widget.value) {
         case false:
@@ -210,15 +212,6 @@ class _CircularCheckBoxState extends State<CircularCheckBox> with TickerProvider
           break;
       }
     }
-    final RenderObject renderObject = node.context.findRenderObject();
-    renderObject.sendSemanticsEvent(const TapSemanticEvent());
-  }
-
-  Action _createAction() {
-    return CallbackAction(
-      ActivateAction.key,
-      onInvoke: _actionHandler,
-    );
   }
 
   bool _focused = false;
