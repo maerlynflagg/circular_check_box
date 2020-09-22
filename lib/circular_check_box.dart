@@ -67,6 +67,7 @@ class CircularCheckBox extends StatefulWidget {
     this.disabledColor,
     this.focusColor,
     this.hoverColor,
+    this.fillInactiveBox = false,
     this.materialTapTargetSize,
     this.visualDensity,
     this.focusNode,
@@ -135,6 +136,9 @@ class CircularCheckBox extends StatefulWidget {
 
   /// The color for the checkbox's [Material] when a pointer is hovering over it.
   final Color hoverColor;
+
+  /// Fill the unchecked box
+  final bool fillInactiveBox;
 
   /// If true the checkbox's [value] can be true, false, or null.
   ///
@@ -270,6 +274,7 @@ class _CircularCheckBoxState extends State<CircularCheckBox> with TickerProvider
             vsync: this,
             hasFocus: _focused,
             hovering: _hovering,
+            fillInactiveBox: widget.fillInactiveBox,
           );
         },
       ),
@@ -292,6 +297,7 @@ class _CircularCheckBoxRenderObjectWidget extends LeafRenderObjectWidget {
     @required this.additionalConstraints,
     @required this.hasFocus,
     @required this.hovering,
+    @required this.fillInactiveBox,
   }) : assert(tristate != null),
       assert(tristate || value != null),
       assert(activeColor != null),
@@ -311,6 +317,7 @@ class _CircularCheckBoxRenderObjectWidget extends LeafRenderObjectWidget {
   final ValueChanged<bool> onChanged;
   final TickerProvider vsync;
   final BoxConstraints additionalConstraints;
+  final bool fillInactiveBox;
 
   @override
   _RenderCircularCheckBox createRenderObject(BuildContext context) => _RenderCircularCheckBox(
@@ -326,6 +333,7 @@ class _CircularCheckBoxRenderObjectWidget extends LeafRenderObjectWidget {
     additionalConstraints: additionalConstraints,
     hasFocus: hasFocus,
     hovering: hovering,
+    fillInactiveBox: fillInactiveBox,
   );
 
   @override
@@ -362,6 +370,7 @@ class _RenderCircularCheckBox extends RenderToggleable {
     ValueChanged<bool> onChanged,
     bool hasFocus,
     bool hovering,
+    this.fillInactiveBox,
     @required TickerProvider vsync,
   }) : _oldValue = value,
       super(
@@ -380,6 +389,7 @@ class _RenderCircularCheckBox extends RenderToggleable {
 
   bool _oldValue;
   Color checkColor;
+  bool fillInactiveBox;
 
   @override
   set value(bool newValue) {
@@ -418,7 +428,7 @@ class _RenderCircularCheckBox extends RenderToggleable {
     assert(t >= 0.0 && t <= 0.5);
     paint
       ..strokeWidth = _kStrokeWidth
-      ..style = PaintingStyle.stroke;
+      ..style = fillInactiveBox ? PaintingStyle.fill : PaintingStyle.stroke;
     canvas.drawCircle(center, radius, paint);
   }
 
